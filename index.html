@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mica</title>
+    <style>
+        /* Configuración del fondo centrado */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffe6e6;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal del sobre */
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            transform: translateY(40px); /* Ajuste para dar espacio a la carta cuando suba */
+        }
+
+        /* El sobre (Cuerpo principal) */
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background-color: #ff99b4;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            transition: transform 0.4s ease;
+        }
+
+        /* Solapa superior del sobre */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            z-index: 4;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #ff80a0; /* Color ligeramente más oscuro para contraste */
+            transform-origin: top;
+            transition: transform 0.4s ease 0.4s, z-index 0.2s ease 0.4s;
+        }
+
+        /* Laterales interiores del sobre (efecto visual de bolsillo) */
+        .envelope::after {
+            content: '';
+            position: absolute;
+            z-index: 3;
+            width: 0;
+            height: 0;
+            border-left: 150px solid #ffb3c6;
+            border-right: 150px solid #ffb3c6;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid #ffb3c6;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            top: 0;
+        }
+
+        /* La carta oculta dentro del sobre (más alta para el texto largo) */
+        .letter {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            width: 270px;
+            height: 220px; /* Un poco más alta que el sobre */
+            background-color: #ffffff;
+            border-radius: 4px;
+            z-index: 2;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+            transition: transform 0.6s ease 0.8s;
+        }
+
+        /* Texto de la carta ajustado para el mensaje largo */
+        .letter .text-content {
+            font-size: 12px;
+            color: #4a4a4a;
+            line-height: 1.5;
+            text-align: center;
+            margin: 0;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.4s ease 1.2s, transform 0.4s ease 1.2s;
+        }
+
+        .letter .text-content strong {
+            color: #ff4d6d;
+        }
+
+        /* Corazón decorativo para cerrar el sobre */
+        .heart-seal {
+            position: absolute;
+            top: 90px;
+            left: 135px;
+            width: 30px;
+            height: 30px;
+            background-color: #ff4d6d;
+            transform: rotate(-45deg);
+            z-index: 5;
+            transition: transform 0.4s ease 0.4s, opacity 0.4s ease 0.4s;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .heart-seal::before,
+        .heart-seal::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #ff4d6d;
+            border-radius: 50%;
+        }
+
+        .heart-seal::before { top: -15px; left: 0; }
+        .heart-seal::after { left: 15px; top: 0; }
+
+
+        /* --- ESTADOS ANIMADOS (Cuando se hace clic) --- */
+
+        /* 1. Abrir la solapa superior */
+        .envelope-wrapper.open .envelope::before {
+            transform: rotateX(180deg);
+            z-index: 1; /* Pasa detrás de la carta */
+        }
+
+        /* 2. Desvanecer el corazón de sello */
+        .envelope-wrapper.open .heart-seal {
+            opacity: 0;
+            transform: rotate(-45deg) scale(0);
+        }
+
+        /* 3. Desplazar la carta hacia arriba significativamente */
+        .envelope-wrapper.open .letter {
+            transform: translateY(-160px);
+            z-index: 5; /* Se posiciona al frente por completo */
+        }
+
+        /* 4. Mostrar el texto de la carta */
+        .envelope-wrapper.open .letter .text-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Efecto sutil al pasar el mouse antes de abrir */
+        .envelope-wrapper:hover .envelope {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="envelope-wrapper" id="envelopeWrapper">
+        <div class="envelope"></div>
+        <div class="heart-seal"></div>
+        <div class="letter">
+            <div class="text-content">
+                <p style="margin-top: 0;"><strong>Te amo</strong> es una palabra pequeña, pero su significado no tiene tamaño.</p>
+                <p>Es muy fácil decirlo, pero detrás de esas 2 palabras hay risas, besos, abrazos, lagrimas, peleas y muchas cosas mas.</p>
+                <p>Cada momento que paso con vos siento que aunque no tenga tamaño se queda chico.</p>
+                <p style="margin-bottom: 0;"><strong>Mica</strong>, te juro que nunca me voy a cansar de decirte cuanto te amo y lo feliz que me haces. ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const envelope = document.getElementById('envelopeWrapper');
+        
+        // Escucha el click para añadir o quitar la clase 'open'
+        envelope.addEventListener('click', () => {
+            envelope.classList.toggle('open');
+        });
+    </script>
+
+</body>
+</html>
